@@ -1,0 +1,93 @@
+body {
+  background-color: whitesmoke;
+  margin: 0;
+}
+
+canvas {
+  height: 300px;
+  width: 700px;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+@media screen and (max-width: 900px) {
+  .container div {
+    transform: scale(0.8);
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .container div {
+    transform: scale(0.6);
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .container div {
+    transform: scale(0.4);
+  }
+}
+
+aside {
+  width: 300px;
+  height: 600px;
+  background-color: white;
+  padding: 10px;
+}
+
+nav {
+  width: 100%;
+  height: 130px;
+  background-color: grey;
+}
+
+footer {
+  width: 100%;
+  height: 130px;
+  background-color: grey;
+  margin-top: 73px;
+}
+h1 {
+  font-family: cursive;
+  font-size: 30px;
+  text-align: left;
+}
+.temp {
+  font-family: cursive;
+  font-size: 100px;
+  text-align: left;
+}
+
+.weatherIcon {
+  width: 100%;
+  height: 150px;
+  border: black 5px;
+}
+
+#cityName {
+  font-size: 40px;
+  font-family: cursive;
+  color: grey;
+}
+
+#temp {
+  font-size: 60px;
+  font-family: cursive;
+  font-weight: bold;
+}
+
+#weatherDesc {
+  font-size: 20px;
+  font-family: cursive;
+}
