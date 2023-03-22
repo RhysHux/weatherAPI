@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- link to css -->
+    <link rel="stylesheet" href="style.css" />
+    <title>weather api example</title>
+    <!-- link to charts.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="Rhys_test_with_charts.html">Weather</a></li>
+        <li><a href="Rhys_test_health.html">Health</a></li>
+      </ul>
+    </nav>
+    <div class="main-container">
+      <div>
+        <aside>
+          <!-- input for location search -->
+          <input id="searchVal" type="search" placeholder="City search..." />
+          <!-- button to submit location search -->
+          <button type="submit" onclick="getLocationCord()" id="submit">
+            Submit
+          </button>
+            <div class="currentWeather">
+            <h1>Current Weather:</h1>
+            <div id="cityName"></div>
+            <div id="temp"></div>
+            <img id="weatherIcon" src="#"></img>
+            <div id="weatherDesc"></div>
+          </div>
+        </aside>
+      </div>
+      <!-- containers for the different charts -->
+      <div class="container">
+        <div>
+          <canvas id="tempChart"></canvas>
+        </div>
+        <div>
+          <canvas id="windChart"></canvas>
+        </div>
+        <div>
+          <canvas id="precChart"></canvas>
+        </div>
+        <div>
+          <canvas id="AirQChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <footer></footer>
+    <script>
+      // setting variables for each chart
+      var _chartTemp;
+      var _chartWind;
+      var _chartPrec;
+      var _chartAirQ;
+      // api key for open weather
+      const apiKey = "f11f310664bef153e061d0df7ecce96b";
+      // function to get the latitude and longitude of a location
+      function getLocationCord() {
+        // checking if the searchVal input has a value
+        if ("searchVal" == "") {
+          console.log("No location");
+          document.getElementById("cityName").innerHTML = "Invalid Location";
+        } else {
+          // getting the value of the input
+          var location = document.getElementById("searchVal").value;
+          // URL to get weather data for location
+          const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
+          fetch(url)
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("DATA---", data);
+              // destrcturing data object to get the relevant data
+              const { main, name, sys, weather, coord } = data;
+              console.log("coord", coord);
+              console.log("weather", weather);
+              icon = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${weather[0]["icon"]}.svg`;
+              let temp = main.temp;
+              let desc = weather[0].description;
+              let lat = coord.lat;
+              let lon = coord.lon;
+
+              document.getElementById("cityName").innerHTML = location;
+              document.getElementById("temp").innerHTML = temp + "℃";
+              document.getElementById("weatherIcon").src = icon;
+              document.getElementById("weatherDesc").innerHTML = desc;
+              // calling functions to get weather data for location
+              getTemp(lat, lon);
+              getWind(lat, lon);
+              getPrec(lat, lon);
+              getAirQ(lat, lon);
+            })
+            .catch(error => {
+              document.getElementById("cityName").innerHTML = "Invalid Location";
+              document.getElementById("temp").innerHTML = "";
+              document.getElementById("weatherIcon").src = "";
+              document.getElementById("weatherDesc").innerHTML = "";
+            });
+        }
+      }
+      // function to change the location on the map
+      function changeLocation(lat, lng, name) {
+        getWeather(lat, lng);
+      }
+      // function to get the temperature data for a location
+      function getTemp(lat, lng) {
+        // This code makes a request to the Open Meteo API for a weather forecast
+        //  based on latitude and longitude coordinates
+        fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,windspeed_10m,winddirection_10m,windgusts_10m&forecast_days=3`
+        )
+          // if the reqiest is successful, the response is parsed as JSON
+          .then((response) => response.json())
+          // the data receive from the api is used to create
+          // a new chart displaying temperature and dew point
+          .then((data) => {
+            console.log("Data", data);
+            // if a previous chart exists, it is cleared and destroyed
+            if (_chartTemp) {
+              _chartTemp.clear();
+              _chartTemp.destroy();
+            }
+            // the canvas element for the chart is obtained by its id and
+            // its context is set to 2D
+            const ctx = document.getElementById("tempChart").getContext("2d");
+            // a new chart object is created with the retreived data and
+            // options for chart display
+            _chartTemp = new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: data.hourly.time,
+                datasets: [
+                  {
+                    label: "Temperature",
+                    data: data.hourly.temperature_2m,
+                    borderColor: "red",
+                    fill: false,
+                    tension: 1,
+                  },
+                  {
+                    label: "Feels like",
+                    data: data.hourly.apparent_temperature,
+                    borderColor: "blue",
+                    fill: false,
+                    tension: 1,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: "Forecast Temperature (3 days)",
+                    padding: {
+                      top: 10,
+                      bottom: 30,
+                    },
+                  },
+                },
+              },
+            });
+          })
+          // if an error occurs while fetching dat from the api,
+          // an error message is logged to their console
+          .catch((error) => console.error(error));
+      }
+      // function to get the wind data for a location
+      function getWind(lat, lng) {
+        fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,windspeed_10m,winddirection_10m,windgusts_10m&forecast_days=3`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Data", data);
+
+            if (_chartWind) {
+              _chartWind.clear();
+              _chartWind.destroy();
+            }
+
+            const ctx_2 = document.getElementById("windChart").getContext("2d");
+
+            _chartWind = new Chart(ctx_2, {
+              type: "line",
+              data: {
+                labels: data.hourly.time,
+                datasets: [
+                  {
+                    label: "Wind speed",
+                    data: data.hourly.windspeed_10m,
+                    borderColor: "red",
+                    fill: false,
+                  },
+                  {
+                    label: "Wind direction",
+                    data: data.hourly.winddirection_10m,
+                    borderColor: "blue",
+                    fill: false,
+                  },
+                  {
+                    label: "Wind gusts",
+                    data: data.hourly.windgusts_10m,
+                    borderColor: "green",
+                    fill: false,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: "Forecast Wind (3 days)",
+                    padding: {
+                      top: 10,
+                      bottom: 30,
+                    },
+                  },
+                },
+              },
+            });
+          });
+      }
+      // function to get the precipetation data for a location
+      function getPrec(lat, lng) {
+        fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,windspeed_10m,winddirection_10m,windgusts_10m&forecast_days=3`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Data", data);
+
+            if (_chartPrec) {
+              _chartPrec.clear();
+              _chartPrec.destroy();
+            }
+
+            const ctx_3 = document.getElementById("precChart").getContext("2d");
+
+            _chartPrec = new Chart(ctx_3, {
+              type: "line",
+              data: {
+                labels: data.hourly.time,
+                datasets: [
+                  {
+                    label: "Precipitation",
+                    data: data.hourly.precipitation,
+                    borderColor: "blue",
+                    fill: false,
+                  },
+                  {
+                    label: "Rain",
+                    data: data.hourly.rain,
+                    borderColor: "green",
+                    fill: false,
+                  },
+                  {
+                    label: "Showers",
+                    data: data.hourly.showers,
+                    borderColor: "orange",
+                    fill: false,
+                  },
+                  {
+                    label: "Snowfall",
+                    data: data.hourly.snowfall,
+                    borderColor: "black",
+                    fill: false,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: "Forecast Precipetation (3 days)",
+                    padding: {
+                      top: 10,
+                      bottom: 30,
+                    },
+                  },
+                },
+              },
+            });
+          })
+          .catch((error) => console.error(error));
+      }
+      // function to get the air quality data for a location
+      function getAirQ(lat, lng) {
+        fetch(
+          `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lng}&hourly=pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone&start_date=2023-03-22&end_date=2023-03-24`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Data", data);
+
+            if (_chartAirQ) {
+              _chartAirQ.clear();
+              _chartAirQ.destroy();
+            }
+
+            const ctx_4 = document.getElementById("AirQChart").getContext("2d");
+
+            _chartAirQ = new Chart(ctx_4, {
+              type: "line",
+              data: {
+                labels: data.hourly.time,
+                datasets: [
+                  {
+                    label: "particular matter",
+                    data: data.hourly.pm2_5,
+                    borderColor: "red",
+                    fill: false,
+                  },
+                  {
+                    label: "carbon monoxide",
+                    data: data.hourly.carbon_monoxide,
+                    borderColor: "blue",
+                    fill: false,
+                  },
+                  {
+                    label: "nitrogen dioxide",
+                    data: data.hourly.nitrogen_dioxide,
+                    borderColor: "green",
+                    fill: false,
+                  },
+                  {
+                    label: "sulphur dioxide",
+                    data: data.hourly.sulphur_dioxide,
+                    borderColor: "orange",
+                    fill: false,
+                  },
+                  {
+                    label: "ozone",
+                    data: data.hourly.ozone,
+                    borderColor: "black",
+                    fill: false,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  title: {
+                    display: true,
+                    text: "Forecast Air quality (3 days)",
+                    padding: {
+                      top: 10,
+                      bottom: 30,
+                    },
+                  },
+                },
+              },
+            });
+          })
+          .catch((error) => console.error(error));
+      }
+    </script>
+  </body>
+</html>
