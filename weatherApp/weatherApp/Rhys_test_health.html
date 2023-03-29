@@ -3,18 +3,30 @@
   <head>
     <link rel="stylesheet" href="health.css" />
     <title>Open Meteo API Example</title>
+    <script src="health.js"></script>
   </head>
   <body>
     <nav>
       <ul>
         <li><a href="Rhys_test_with_charts.html">Weather</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
         <li><a href="Rhys_test_health.html">Health</a></li>
       </ul>
     </nav>
     <div class="main-container">
       <div class="scrollBox">
         <h1>Health Conditions</h1>
+        <input
+          type="text"
+          id="myInput"
+          onkeyup="searchHealth()"
+          placeholder="Search for names.."
+        />
         <ul id="buttons">
+          <li><a onclick="uvIndex()">UV Index</a></li>
+          <li><a onclick="pollenInfo()">Pollen</a></li>
+          <li><a onclick="humidityInfo()">Humidity</a></li>
+          <li><a href="#">example</a></li>
           <li><a href="#">example</a></li>
           <li><a href="#">example</a></li>
           <li><a href="#">example</a></li>
@@ -24,90 +36,8 @@
           <li><a href="#">example</a></li>
         </ul>
       </div>
-      <div class="info">
-        <label>pollen allergy</label>
-        <input type="checkbox" id="pollen" />
-        <button type="submit" id="submit">Submit</button>
-
-        <label>UV light</label>
-        <input type="checkbox" id="uv" />
-        <button type="submit" id="submit" onclick="filterUV()">Submit</button>
-
-        <label></label>
-        <input type="checkbox" id="pollen" />
-        <button type="submit" id="submit">Submit</button>
-
-        <label>pollen allergy</label>
-        <input type="checkbox" id="pollen" />
-        <button type="submit" id="submit">Submit</button>
-
-        <label>pollen allergy</label>
-        <input type="checkbox" id="pollen" />
-        <button type="submit" id="submit">Submit</button>
-      </div>
-      <div>
-        <p id="uvWarning"></p>
-      </div>
+      <div id="info"></div>
     </div>
     <footer></footer>
-    <script>
-      // setting variables for each chart
-      var _chartTemp;
-      var _chartWind;
-      var _chartPrec;
-      var _chartAirQ;
-      var filterByUv;
-
-      var uvIndexDic = {
-        0: "no sunscreen needed today :)!",
-        1: "Put sunscrean on!",
-        2: "Put sunscrean on!",
-        3: "Put sunscrean on!",
-        4: "Put sunscrean on!",
-        5: "Put sunscrean on!",
-        6: "Put sunscrean on!",
-        7: "Put sunscrean on!",
-        8: "Put sunscrean on!",
-        9: "Put sunscrean on!",
-        10: "Put sunscrean on!",
-      };
-      // api key for open weather
-      const apiKey = "f11f310664bef153e061d0df7ecce96b";
-      // function to get the latitude and longitude of a location
-
-      function filterUV() {
-        // getting the value of the input
-        // filterByUv = document.getElementById("uv").value;
-        // console.log("uv filter", filterByUv);
-        filterByUv = true;
-        // URL to get weather data for location
-        if (filterByUv) {
-          const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=50.46&longitude=-3.53&hourly=uv_index&start_date=2023-03-22&end_date=2023-03-24`;
-          fetch(url)
-            .then((response) => response.json())
-            .then((data) => {
-              console.log("DATA---", data);
-              // destrcturing data object to get the relevant data
-              const { hourly_units } = data;
-
-              var index = hourly_units["uvIndex"]
-              if (!index){
-                uvIndex = 0;
-              } else {
-                var uvIndex = math.round(hourly_units.uv_index);
-              }
-
-              uvHealthMessage = uvIndexDic[uvIndex];
-
-              console.log("message", uvHealthMessage)
-
-              document.getElementById("uvWarning").innerHTML = uvHealthMessage;
-            })
-            .catch((error) => {
-              document.getElementById("uvWarning").innerHTML = "Invalid Location";
-            });
-        }
-      }
-    </script>
   </body>
 </html>

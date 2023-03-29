@@ -1,6 +1,7 @@
 body {
   background-color: whitesmoke;
   margin: 0;
+  font-family: cursive;
 }
 
 aside {
@@ -10,10 +11,34 @@ aside {
   padding: 10px;
 }
 
+/* Style for the navigation bar */
 nav {
-  width: 100%;
-  height: 130px;
+  height: 70px;
   background-color: grey;
+}
+
+nav ul {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  padding: 0 20px;
+}
+
+nav li {
+  list-style: none;
+  margin-right: 20px;
+}
+
+nav li a {
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+}
+
+nav li a:hover {
+  color: lightgrey;
 }
 
 footer {
@@ -26,16 +51,28 @@ footer {
 .scrollBox {
   width: 450px;
   height: 600px;
-  background-color: pink;
-  overflow: scroll;
-  margin: 8px;
+  background-color: rgb(65, 65, 65);
+  color: lightblue;
+  overflow: auto;
+  margin: 15px;
+  border: 2px;
+  border-radius: 30px;
 }
 
-.info {
-  height: 600px;
+::-webkit-scrollbar {
+  display: none;
+}
+
+#info {
   width: 100%;
+  height: 100%;
   background-color: lightblue;
   margin: 8px;
+  word-wrap: break-word;
+  font-size: 20px;
+  font-family: cursive;
+  padding: 10px;
+  border-radius: 30px;
 }
 
 .main-container {
@@ -48,22 +85,60 @@ h1 {
   text-align: center;
 }
 
+#buttons {
+  /* Remove default list styling */
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
 #buttons li {
   list-style: none;
-  text-align: center;
   background-color: grey;
   margin-bottom: 30px;
   width: 250px;
   line-height: 60px;
+  border-radius: 30px;
+  margin-left: 20px;
+  text-align: center;
 }
 
 #buttons li a {
-  text-decoration: none;
-  color: #ffffff;
+  
+  margin-top: -1px; /* Prevent double borders */
+  background-color: #636363; /* Grey background color */
+  padding: 12px; /* Add some padding */
+  text-decoration: none; /* Remove default text underline */
+  font-size: 18px; /* Increase the font-size */
+  color: rgb(255, 255, 255); /* Add a black text color */
+  border-radius: 15px;
   display: block;
 }
 
-#buttons li a:hover {
-  text-decoration: none;
+#buttons li a:hover:not(.header) {
   background-color: lightgrey;
+  cursor: pointer;
+}
+
+#warning {
+  padding: 20px;
+  background-color: #f44336; /* Red */
+  color: white;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* search health */
+
+#myInput {
+  background-position: 10px 12px; /* Position the search icon */
+  background-repeat: no-repeat; /* Do not repeat the icon image */
+  width: 200px; /* Full-width */
+  font-size: 16px; /* Increase font-size */
+  padding: 12px 20px 12px 40px; /* Add some padding */
+  border: 1px solid #ddd; /* Add a grey border */
+  margin-bottom: 12px; /* Add some space below the input */
+  margin-left: 12px;
+  align-items: center;
+  border-radius: 90px;
 }
